@@ -23,4 +23,6 @@ RUN set -x \
         su-exec \
         $(scanelf --needed --nobanner --format '%n#p' --recursive /usr/lib/postgresql/pgautofailover.so | tr ',' '\n' | sort -u | awk 'system("[ -e /usr/local/lib/" $1 " ]") == 0 { next } { print "so:" $1 }') \
     && apk del --no-cache .build-deps \
-    && rm -rf /usr/src
+    && rm -rf /usr/src \
+    && mkdir -p /run/postgresql \
+    && chown postgres:postgres "${HOME}" /run/postgresql
