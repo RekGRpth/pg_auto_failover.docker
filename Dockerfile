@@ -1,12 +1,10 @@
 FROM alpine
 RUN set -x \
     && apk add --no-cache --virtual .build-deps \
-#        clang \
         gcc \
         git \
         libedit-dev \
         libxml2-dev \
-#        llvm9 \
         make \
         musl-dev \
         postgresql-dev \
