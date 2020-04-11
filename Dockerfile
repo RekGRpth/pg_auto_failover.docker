@@ -1,4 +1,8 @@
 FROM alpine
+ENV HOME=/home \
+    PGDATA=${HOME}/pg_data
+WORKDIR "${HOME}"
+VOLUME "${HOME}"
 RUN set -x \
     && apk add --no-cache --virtual .build-deps \
         gcc \
