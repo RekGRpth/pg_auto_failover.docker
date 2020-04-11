@@ -1,0 +1,23 @@
+FROM alpine
+RUN set -x \
+    && apk add --no-cache --virtual .build-deps \
+#        clang \
+        gcc \
+        git \
+        libedit-dev \
+        libxml2-dev \
+#        llvm9 \
+        make \
+        musl-dev \
+        postgresql-dev \
+        zlib-dev \
+    && mkdir -p /usr/src \
+    && cd /usr/src \
+    && git clone --recursive https://github.com/RekGRpth/pg_auto_failover.git \
+    && cd /usr/src/pg_auto_failover \
+    && make -j"$(nproc)" USE_PGXS=1 install \
+    && apk add --no-cache --virtual .postgresql-rundeps \
+        postgresql \
+        $(scanelf --needed --nobanner --format '%n#p' --recursive /usr/lib/postgresql/pgautofailover.so | tr ',' '\n' | sort -u | awk 'system("[ -e /usr/local/lib/" $1 " ]") == 0 { next } { print "so:" $1 }') \
+    && apk del --no-cache .build-deps \
+    && rm -rf /usr/src
