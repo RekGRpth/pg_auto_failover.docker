@@ -1,6 +1,6 @@
 FROM alpine
-ENV HOME=/home \
-    PGDATA=${HOME}/pg_data
+ENV HOME=/home
+ENV PGDATA="${HOME}/pg_data"
 WORKDIR "${HOME}"
 VOLUME "${HOME}"
 RUN set -x \
