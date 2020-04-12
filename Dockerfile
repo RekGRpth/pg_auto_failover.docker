@@ -1,6 +1,6 @@
 FROM alpine
 CMD [ "sh" ]
-ENTRYPOINT [ "su-exec" "postgres" ]
+ENTRYPOINT [ "su-exec", "postgres" ]
 ENV HOME=/var/lib/postgresql
 ENV PGDATA="${HOME}/pg_data"
 WORKDIR "${HOME}"
