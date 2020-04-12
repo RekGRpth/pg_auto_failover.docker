@@ -1,5 +1,5 @@
 FROM alpine
-ENV HOME=/home
+ENV HOME=/var/lib/postgresql
 ENV PGDATA="${HOME}/pg_data"
 WORKDIR "${HOME}"
 VOLUME "${HOME}"
@@ -20,10 +20,9 @@ RUN set -x \
     && make -j"$(nproc)" USE_PGXS=1 install \
     && apk add --no-cache --virtual .postgresql-rundeps \
         postgresql \
-        shadow \
         su-exec \
         $(scanelf --needed --nobanner --format '%n#p' --recursive /usr/lib/postgresql/pgautofailover.so | tr ',' '\n' | sort -u | awk 'system("[ -e /usr/local/lib/" $1 " ]") == 0 { next } { print "so:" $1 }') \
     && apk del --no-cache .build-deps \
     && rm -rf /usr/src \
     && mkdir -p /run/postgresql \
-    && chown postgres:postgres "${HOME}" /run/postgresql
+    && chown -R postgres:postgres "${HOME}" /run/postgresql
