@@ -42,6 +42,6 @@ chown "$USER":"$GROUP" supervise/ok supervise/control supervise/status
 #else
 #    test -d "$PGDATA/base" || /etc/service/postgres/primary
 #fi
-test -d "$PGDATA/base" || /etc/service/postgres/init
-test -d "$PGDATA/base"
-exec chpst -u "$USER":"$GROUP" -L /run/postgresql/postgres.run postmaster
+#test -d "$PGDATA/base" || /etc/service/postgres/init
+#test -d "$PGDATA/base"
+#exec chpst -u "$USER":"$GROUP" -L /run/postgresql/postgres.run postmaster

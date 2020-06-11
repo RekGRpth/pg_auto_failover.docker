@@ -4,11 +4,13 @@ exec 2>&1
 install -d -m 0750 -o "$USER" -g "$GROUP" "$PGDATA"
 install -d -m 1775 -o "$USER" -g "$GROUP" /run/postgresql /var/log/postgresql
 rm -f /run/postgresql/pg_auto_failover.run
-test -f /run/postgresql/postgres.run || exit $?
+#test -f /run/postgresql/postgres.run || exit $?
 realpath "$0"
 set -ex
 chmod 755 supervise
 chown "$USER":"$GROUP" supervise/ok supervise/control supervise/status
+test -d "$PGDATA/base" || /etc/service/postgres/init
+test -d "$PGDATA/base"
 if [ -z "$PG_AUTO_FAILOVER_MONITOR" ]; then
     chpst -u "$USER":"$GROUP" pg_autoctl -vvv create monitor --nodename "$(hostname)" --no-ssl --auth trust
 else
