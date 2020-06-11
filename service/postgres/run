@@ -18,6 +18,7 @@ if [ -z "$PG_AUTO_FAILOVER_MONITOR" ]; then
 elif [ ! -d "$PGDATA/base" ]; then
 #        exit
     chpst -u "$USER":"$GROUP" pg_autoctl -vvv create postgres --nodename "$(hostname)" --no-ssl --skip-pg-hba --monitor="$PG_AUTO_FAILOVER_MONITOR"
+    chpst -u "$USER":"$GROUP" createuser pgautofailover_monitor
     chpst -u "$USER":"$GROUP" pg_ctl --wait --mode=fast stop
     chpst -u "$USER":"$GROUP" /etc/service/postgres/conf
     chpst -u "$USER":"$GROUP" /etc/service/postgres/hba
