@@ -9,11 +9,16 @@ set -ex
 chmod 755 supervise
 chown "$USER":"$GROUP" supervise/ok supervise/control supervise/status
 rm -f "$PGDATA/postmaster.pid"
-if [ -z "$PG_AUTO_FAILOVER_MONITOR" ]; then
-    test -d "$PGDATA/base" || /etc/service/postgres/init
-    test -d "$PGDATA/base"
-    chpst -u "$USER":"$GROUP" pg_autoctl -vvv create monitor --nodename "$(hostname)" --no-ssl --auth trust || echo $?
-else
-    chpst -u "$USER":"$GROUP" pg_autoctl -vvv create postgres --nodename "$(hostname)" --no-ssl --auth trust --monitor="$PG_AUTO_FAILOVER_MONITOR" || echo $?
+if [ ! -d "$PGDATA/base" ]; then
+    if [ -z "$PG_AUTO_FAILOVER_MONITOR" ]; then
+        cd "$PGDATA" && chpst -u "$USER":"$GROUP" initdb
+        chpst -u "$USER":"$GROUP" /etc/service/postgres/conf
+        chpst -u "$USER":"$GROUP" /etc/service/postgres/hba
+        chpst -u "$USER":"$GROUP" pg_autoctl -vvv create monitor --nodename "$(hostname)" --no-ssl --skip-pg-hba
+    else
+        chpst -u "$USER":"$GROUP" pg_autoctl -vvv create postgres --nodename "$(hostname)" --no-ssl --skip-pg-hba --monitor="$PG_AUTO_FAILOVER_MONITOR"
+        chpst -u "$USER":"$GROUP" /etc/service/postgres/conf
+        chpst -u "$USER":"$GROUP" /etc/service/postgres/hba
+    fi
 fi
 exec chpst -u "$USER":"$GROUP" -L /run/postgresql/postgres.run pg_autoctl -vvv run
