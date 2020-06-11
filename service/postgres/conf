@@ -1,0 +1,18 @@
+#!/bin/sh
+
+exec 2>&1
+realpath "$0"
+set -ex
+cat >>"$PGDATA/postgresql.conf" <<EOF
+
+archive_command = '/bin/true'
+archive_mode = on
+datestyle = 'iso, dmy'
+listen_addresses = '*'
+max_logical_replication_workers = 0
+max_sync_workers_per_subscription = 0
+ssl_ca_file = '/etc/certs/ca.pem'
+ssl_cert_file = '/etc/certs/cert.pem'
+ssl_key_file = '/etc/certs/key.pem'
+ssl = on
+EOF

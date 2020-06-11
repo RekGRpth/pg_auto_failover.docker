@@ -1,0 +1,28 @@
+#!/bin/sh
+
+exec 2>&1
+install -d -m 0750 -o "$USER" -g "$GROUP" "$PGDATA"
+install -d -m 1775 -o "$USER" -g "$GROUP" /run/postgresql /var/log/postgresql
+rm -f /run/postgresql/pg_auto_failover.run
+#test -f /run/postgresql/postgres.run || exit $?
+realpath "$0"
+set -ex
+chmod 755 supervise
+chown "$USER":"$GROUP" supervise/ok supervise/control supervise/status
+if [ -z "$PG_AUTO_FAILOVER_MONITOR" ]; then
+    chpst -u "$USER":"$GROUP" pg_autoctl -vvv create monitor --nodename "$(hostname)" --no-ssl --auth trust
+else
+    chpst -u "$USER":"$GROUP" pg_autoctl -vvv create postgres --nodename "$(hostname)" --no-ssl --auth trust --allow-removing-pgdata --monitor="$PG_AUTO_FAILOVER_MONITOR"
+fi
+#chpst -u "$USER":"$GROUP" pg_ctl status
+#primary="$(cat "$HOME/gfs/primary")"
+#test -n "$primary"
+#if [ "$primary" != "$(hostname)" ]; then
+#    test -f "$HOME/repmgr.conf" || /etc/service/repmgr/standby
+#    chpst -u "$USER":"$GROUP" repmgr standby register --config-file="$HOME/repmgr.conf" --verbose --force
+#else
+#    test -f "$HOME/repmgr.conf" || /etc/service/repmgr/primary
+#    test ! -f "$PGDATA/standby.signal" || /etc/service/repmgr/promote
+#    chpst -u "$USER":"$GROUP" repmgr primary register --config-file="$HOME/repmgr.conf" --verbose --force
+#fi
+exec chpst -u "$USER":"$GROUP" -L /run/postgresql/pg_auto_failover.run pg_autoctl -vvv run
