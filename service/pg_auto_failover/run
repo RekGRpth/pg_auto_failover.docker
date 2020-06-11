@@ -4,7 +4,7 @@ exec 2>&1
 install -d -m 0750 -o "$USER" -g "$GROUP" "$PGDATA"
 install -d -m 1775 -o "$USER" -g "$GROUP" /run/postgresql /var/log/postgresql
 rm -f /run/postgresql/pg_auto_failover.run
-#test -f /run/postgresql/postgres.run || exit $?
+test -f /run/postgresql/postgres.run || exit $?
 realpath "$0"
 set -ex
 chmod 755 supervise
