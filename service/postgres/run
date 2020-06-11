@@ -9,9 +9,9 @@ set -ex
 chmod 755 supervise
 chown "$USER":"$GROUP" supervise/ok supervise/control supervise/status
 rm -f "$PGDATA/postmaster.pid"
-test -d "$PGDATA/base" || /etc/service/postgres/init
-test -d "$PGDATA/base"
 if [ -z "$PG_AUTO_FAILOVER_MONITOR" ]; then
+    test -d "$PGDATA/base" || /etc/service/postgres/init
+    test -d "$PGDATA/base"
     chpst -u "$USER":"$GROUP" pg_autoctl -vvv create monitor --nodename "$(hostname)" --no-ssl --auth trust || echo $?
 else
     chpst -u "$USER":"$GROUP" pg_autoctl -vvv create postgres --nodename "$(hostname)" --no-ssl --auth trust --monitor="$PG_AUTO_FAILOVER_MONITOR" || echo $?
