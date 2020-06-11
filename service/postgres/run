@@ -17,7 +17,7 @@ if [ -z "$PG_AUTO_FAILOVER_MONITOR" ]; then
     chpst -u "$USER":"$GROUP" /etc/service/postgres/hba
 elif [ ! -d "$PGDATA/base" ]; then
     chpst -u "$USER":"$GROUP" pg_autoctl -vvv create postgres --nodename "$(hostname)" --no-ssl --skip-pg-hba --monitor="$PG_AUTO_FAILOVER_MONITOR"
-    if [ PGTARGETSESSIONATTRS=read-write psql ]; then
+    if PGTARGETSESSIONATTRS=read-write chpst -u "$USER":"$GROUP" pg_isready; then
         chpst -u "$USER":"$GROUP" createuser pgautofailover_monitor
         chpst -u "$USER":"$GROUP" pg_ctl --wait --mode=fast stop
         chpst -u "$USER":"$GROUP" /etc/service/postgres/conf
