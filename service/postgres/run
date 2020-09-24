@@ -13,7 +13,7 @@ if [ ! -d "$PGDATA/base" ]; then
     if [ -z "$PG_AUTO_FAILOVER_MONITOR" ]; then
         chpst -u "$USER":"$GROUP" pg_autoctl -vvv create monitor --hostname "$(hostname)" --no-ssl --skip-pg-hba
     else
-        chpst -u "$USER":"$GROUP" pg_autoctl -vvv create postgres --hostname "$(hostname)" --no-ssl --skip-pg-hba --monitor="$PG_AUTO_FAILOVER_MONITOR"
+        chpst -u "$USER":"$GROUP" pg_autoctl -vvv create postgres --hostname "$(hostname)" --name "$(hostname)" --no-ssl --skip-pg-hba --monitor="$PG_AUTO_FAILOVER_MONITOR"
     fi
     chpst -u "$USER":"$GROUP" /etc/service/postgres/conf
     chpst -u "$USER":"$GROUP" /etc/service/postgres/hba
