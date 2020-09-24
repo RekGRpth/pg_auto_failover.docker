@@ -1,9 +1,0 @@
-#!/bin/sh
-
-exec 2>&1
-realpath "$0"
-set -ex
-rm -f "$PGDATA/postmaster.pid"
-test -d "$PGDATA/base" || /etc/service/postgres/init
-test -d "$PGDATA/base"
-exec chpst -u "$USER":"$GROUP" postmaster

@@ -1,0 +1,12 @@
+#!/bin/sh
+
+exec 2>&1
+install -d -m 1775 -o "$USER" -g "$GROUP" /run/postgresql /var/log/postgresql
+chmod 755 supervise
+chown "$USER":"$GROUP" supervise/ok supervise/control supervise/status
+rm -f /run/postgresql/repmgr.run
+test -f /run/postgresql/postgres.run || exit $?
+realpath "$0"
+set -ex
+chpst -u "$USER":"$GROUP" pg_ctl status
+exec chpst -u "$USER":"$GROUP" pg_autoctl -vvv run

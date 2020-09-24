@@ -3,30 +3,20 @@
 exec 2>&1
 #install -d -m 0750 -o "$USER" -g "$GROUP" "$PGDATA"
 install -d -m 1775 -o "$USER" -g "$GROUP" /run/postgresql /var/log/postgresql
-#realpath "$0"
-#set -ex
 chmod 755 supervise
 chown "$USER":"$GROUP" supervise/ok supervise/control supervise/status
-#exit
-rm -f "$PGDATA/postmaster.pid"
+rm -f /run/postgresql/postgres.run
 realpath "$0"
 set -ex
-if [ -z "$PG_AUTO_FAILOVER_MONITOR" ]; then
-    chpst -u "$USER":"$GROUP" pg_autoctl -vvv create monitor --hostname "$(hostname)" --no-ssl --skip-pg-hba
+rm -f "$PGDATA/postmaster.pid"
+if [ ! -d "$PGDATA/base" ]; then
+    if [ -z "$PG_AUTO_FAILOVER_MONITOR" ]; then
+        chpst -u "$USER":"$GROUP" pg_autoctl -vvv create monitor --hostname "$(hostname)" --no-ssl --skip-pg-hba
+    else
+        chpst -u "$USER":"$GROUP" pg_autoctl -vvv create postgres --hostname "$(hostname)" --no-ssl --skip-pg-hba --monitor="$PG_AUTO_FAILOVER_MONITOR"
+    fi
     chpst -u "$USER":"$GROUP" /etc/service/postgres/conf
     chpst -u "$USER":"$GROUP" /etc/service/postgres/hba
-elif [ ! -d "$PGDATA/base" ]; then
-    chpst -u "$USER":"$GROUP" pg_autoctl -vvv create postgres --hostname "$(hostname)" --no-ssl --skip-pg-hba --monitor="$PG_AUTO_FAILOVER_MONITOR"
-    if PGTARGETSESSIONATTRS=read-write chpst -u "$USER":"$GROUP" psql -qtc "select now()"; then
-        chpst -u "$USER":"$GROUP" createuser pgautofailover_monitor
-        chpst -u "$USER":"$GROUP" pg_ctl --wait --mode=fast stop
-        chpst -u "$USER":"$GROUP" /etc/service/postgres/conf
-        chpst -u "$USER":"$GROUP" /etc/service/postgres/hba
-    else
-        chpst -u "$USER":"$GROUP" pg_ctl --wait --mode=fast stop
-        chpst -u "$USER":"$GROUP" /etc/service/postgres/hba
-    fi
-#else
-#    PG_AUTOCTL_DEBUG=1 chpst -u "$USER":"$GROUP" pg_autoctl -vvv do monitor register "$(pg_autoctl -vvv show file --state --contents | grep "Current Role" | grep -oE "(\w+)" | tail -1)"
 fi
-exec chpst -u "$USER":"$GROUP" pg_autoctl -vvv run
+test -d "$PGDATA/base"
+exec chpst -u "$USER":"$GROUP" -L /run/postgresql/postgres.run postmaster
