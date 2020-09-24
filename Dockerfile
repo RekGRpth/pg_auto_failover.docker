@@ -29,7 +29,7 @@ RUN exec 2>&1 \
     && echo done
 ADD bin /usr/local/bin
 ADD service /etc/service
-CMD [ "runsvdir", "/etc/service" ]
+CMD /etc/service/postgres/run
 ENTRYPOINT [ "docker_entrypoint.sh" ]
 ENV HOME=/var/lib/postgresql
 ENV GROUP=postgres \
