@@ -19,6 +19,7 @@ RUN exec 2>&1 \
         musl-locales \
         postgresql \
         postgresql-contrib \
+        postgresql-dev \
         runit \
         shadow \
         tzdata \
