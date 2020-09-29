@@ -27,16 +27,12 @@ KEEP_SRVLOG_DAYS=1
 SRVLOG_PATH='$(echo -n "$HOME")/pg_log'
 WITH_SERVERLOG=true
 EOF
+        cat >>"$BACKUP_PATH/pg_rman.ini" <<EOF
+STANDBY_HOST=localhost
+STANDBY_PORT=5432
+EOF
     ;;
 esac
-#case "$MODE" in
-#    "multi" )
-#        cat >>"$BACKUP_PATH/pg_rman.ini" <<EOF
-#STANDBY_HOST=localhost
-#STANDBY_PORT=5432
-#EOF
-#    ;;
-#esac
 cat >>"$PGDATA/postgresql.conf" <<EOF
 
 archive_cleanup_command = 'pg_archivecleanup -d "$(echo -n "$HOME")/pg_arclog" "%r" 2>>"$(echo -n "$HOME")/pg_log/pg_archivecleanup.log"'
