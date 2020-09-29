@@ -9,20 +9,6 @@ rm -f /run/postgresql/postgres.run
 realpath "$0"
 set -ex
 rm -f "$PGDATA/postmaster.pid"
-if [ ! -d "$PGDATA/base" ]; then
-    if [ "$(pg_rman show detail -a | grep OK | wc -l)" -eq "0" ]; then
-        if [ -z "$PG_AUTO_FAILOVER_MONITOR" ]; then
-            chpst -u "$USER":"$GROUP" pg_autoctl create monitor --hostname "$(hostname)" --no-ssl --skip-pg-hba
-        else
-            chpst -u "$USER":"$GROUP" pg_autoctl create postgres --hostname "$(hostname)" --name "$(hostname)" --no-ssl --skip-pg-hba --monitor="$PG_AUTO_FAILOVER_MONITOR"
-        fi
-        if [ ! -f "$PGDATA/standby.signal" ]; then
-            chpst -u "$USER":"$GROUP" /etc/service/postgres/conf
-            chpst -u "$USER":"$GROUP" /etc/service/postgres/hba
-        fi
-    else
-        pg_rman restore
-    fi
-fi
+test -d "$PGDATA/base" || chpst -u "$USER":"$GROUP" /etc/service/postgres/init
 test -d "$PGDATA/base"
 exec chpst -u "$USER":"$GROUP" -L /run/postgresql/postgres.run pg_autoctl run
