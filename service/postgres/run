@@ -10,19 +10,18 @@ realpath "$0"
 set -ex
 rm -f "$PGDATA/postmaster.pid"
 if [ ! -d "$PGDATA/base" ]; then
-    if [ -z "$PG_AUTO_FAILOVER_MONITOR" ]; then
-        chpst -u "$USER":"$GROUP" pg_autoctl create monitor --hostname "$(hostname)" --no-ssl --skip-pg-hba
+    if [ "$(pg_rman show detail -a | grep OK | wc -l)" -eq "0" ]; then
+        if [ -z "$PG_AUTO_FAILOVER_MONITOR" ]; then
+            chpst -u "$USER":"$GROUP" pg_autoctl create monitor --hostname "$(hostname)" --no-ssl --skip-pg-hba
+        else
+            chpst -u "$USER":"$GROUP" pg_autoctl create postgres --hostname "$(hostname)" --name "$(hostname)" --no-ssl --skip-pg-hba --monitor="$PG_AUTO_FAILOVER_MONITOR"
+        fi
+        if [ ! -f "$PGDATA/standby.signal" ]; then
+            chpst -u "$USER":"$GROUP" /etc/service/postgres/conf
+            chpst -u "$USER":"$GROUP" /etc/service/postgres/hba
+        fi
     else
-        chpst -u "$USER":"$GROUP" pg_autoctl create postgres --hostname "$(hostname)" --name "$(hostname)" --no-ssl --skip-pg-hba --monitor="$PG_AUTO_FAILOVER_MONITOR"
-    fi
-    if [ ! -f "$PGDATA/standby.signal" ]; then
-        chpst -u "$USER":"$GROUP" /etc/service/postgres/conf
-        chpst -u "$USER":"$GROUP" /etc/service/postgres/hba
-    fi
-elif [ -n "$PG_AUTO_FAILOVER_MONITOR" ]; then
-    if [ "$(pg_autoctl show state --group "$(pg_autoctl config get pg_autoctl.group)" --formation "$(pg_autoctl config get pg_autoctl.formation)" | grep "$(hostname)" | wc -l)" -eq "0" ]; then
-        chpst -u "$USER":"$GROUP" pg_autoctl drop node
-        chpst -u "$USER":"$GROUP" pg_autoctl create postgres --hostname "$(hostname)" --name "$(hostname)" --no-ssl --skip-pg-hba --monitor="$PG_AUTO_FAILOVER_MONITOR"
+        pg_rman restore
     fi
 fi
 test -d "$PGDATA/base"

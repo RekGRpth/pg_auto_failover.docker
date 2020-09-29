@@ -4,7 +4,6 @@ RUN exec 2>&1 \
     && apk add --no-cache --virtual .build-deps \
         gcc \
         git \
-        jq \
         libedit-dev \
         libxml2-dev \
         make \
@@ -23,6 +22,7 @@ RUN exec 2>&1 \
         busybox-extras \
         busybox-suid \
         ca-certificates \
+        jq \
         musl-locales \
         postgresql \
         postgresql-contrib \
