@@ -4,6 +4,7 @@ RUN exec 2>&1 \
     && apk add --no-cache --virtual .build-deps \
         gcc \
         git \
+        jq \
         libedit-dev \
         libxml2-dev \
         make \
@@ -13,9 +14,15 @@ RUN exec 2>&1 \
     && mkdir -p /usr/src \
     && cd /usr/src \
     && git clone --recursive https://github.com/RekGRpth/pg_auto_failover.git \
+    && git clone --recursive https://github.com/RekGRpth/pg_rman.git \
     && cd /usr/src/pg_auto_failover \
     && make -j"$(nproc)" USE_PGXS=1 install \
+    && cd /usr/src/pg_rman \
+    && make -j"$(nproc)" USE_PGXS=1 install \
     && apk add --no-cache --virtual .postgresql-rundeps \
+        busybox-extras \
+        busybox-suid \
+        ca-certificates \
         musl-locales \
         postgresql \
         postgresql-contrib \
@@ -32,12 +39,15 @@ ADD service /etc/service
 CMD /etc/service/postgres/run
 ENTRYPOINT [ "docker_entrypoint.sh" ]
 ENV HOME=/var/lib/postgresql
-ENV GROUP=postgres \
+ENV BACKUP_PATH=${HOME}/pg_rman \
+    GROUP=postgres \
     PGDATA="${HOME}/pg_data" \
     USER=postgres
 VOLUME "${HOME}"
 WORKDIR "${HOME}"
 RUN exec 2>&1 \
     && set -ex \
+    && sed -i -e 's|postgres:!:|postgres::|g' /etc/shadow \
     && chmod -R 0755 /etc/service /usr/local/bin \
+    && rm -f /var/spool/cron/crontabs/root \
     && echo done

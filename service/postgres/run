@@ -4,14 +4,15 @@ exec 2>&1
 install -d -m 1775 -o "$USER" -g "$GROUP" /run/postgresql /var/log/postgresql "/tmp/pg_autoctl$PGDATA"
 chmod 755 supervise
 chown "$USER":"$GROUP" supervise/ok supervise/control supervise/status
+rm -f /run/postgresql/postgres.run
 realpath "$0"
 set -ex
 rm -f "$PGDATA/postmaster.pid"
 if [ ! -d "$PGDATA/base" ]; then
     if [ -z "$PG_AUTO_FAILOVER_MONITOR" ]; then
-        chpst -u "$USER":"$GROUP" pg_autoctl -vvv create monitor --hostname "$(hostname)" --no-ssl --skip-pg-hba
+        chpst -u "$USER":"$GROUP" pg_autoctl create monitor --hostname "$(hostname)" --no-ssl --skip-pg-hba
     else
-        chpst -u "$USER":"$GROUP" pg_autoctl -vvv create postgres --hostname "$(hostname)" --name "$(hostname)" --no-ssl --skip-pg-hba --monitor="$PG_AUTO_FAILOVER_MONITOR"
+        chpst -u "$USER":"$GROUP" pg_autoctl create postgres --hostname "$(hostname)" --name "$(hostname)" --no-ssl --skip-pg-hba --monitor="$PG_AUTO_FAILOVER_MONITOR"
     fi
     if [ ! -f "$PGDATA/standby.signal" ]; then
         chpst -u "$USER":"$GROUP" /etc/service/postgres/conf
@@ -19,9 +20,9 @@ if [ ! -d "$PGDATA/base" ]; then
     fi
 elif [ -n "$PG_AUTO_FAILOVER_MONITOR" ]; then
     if [ "$(pg_autoctl show state --group "$(pg_autoctl config get pg_autoctl.group)" --formation "$(pg_autoctl config get pg_autoctl.formation)" | grep "$(hostname)" | wc -l)" -eq "0" ]; then
-        chpst -u "$USER":"$GROUP" pg_autoctl -vvv drop node
-        chpst -u "$USER":"$GROUP" pg_autoctl -vvv create postgres --hostname "$(hostname)" --name "$(hostname)" --no-ssl --skip-pg-hba --monitor="$PG_AUTO_FAILOVER_MONITOR"
+        chpst -u "$USER":"$GROUP" pg_autoctl drop node
+        chpst -u "$USER":"$GROUP" pg_autoctl create postgres --hostname "$(hostname)" --name "$(hostname)" --no-ssl --skip-pg-hba --monitor="$PG_AUTO_FAILOVER_MONITOR"
     fi
 fi
 test -d "$PGDATA/base"
-exec chpst -u "$USER":"$GROUP" pg_autoctl -vvv run
+exec chpst -u "$USER":"$GROUP" -L /run/postgresql/postgres.run pg_autoctl run

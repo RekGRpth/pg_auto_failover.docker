@@ -20,4 +20,4 @@ docker run \
     --name pg_auto_failover4 \
     --network name=docker \
     --restart always \
-    rekgrpth/pg_auto_failover
+    rekgrpth/pg_auto_failover runsvdir /etc/service

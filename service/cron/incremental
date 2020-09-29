@@ -1,0 +1,22 @@
+#!/bin/sh
+
+exec 2>&1
+realpath "$0"
+set -ex
+case "$(pg_autoctl config get pg_autoctl.role)" in
+    "monitor" )
+        pg_rman backup --backup-mode=incremental --full-backup-on-error
+    ;;
+    * )
+        case "$(pg_autoctl show state --group "$(pg_autoctl config get pg_autoctl.group)" --formation "$(pg_autoctl config get pg_autoctl.formation)" --json --local | jq -r .current_group_state)" in
+            "single")
+                pg_rman backup --backup-mode=incremental --full-backup-on-error
+            ;;
+            "secondary")
+                pg_rman backup --backup-mode=incremental --full-backup-on-error --host="$(pg_autoctl show state --group "$(pg_autoctl config get pg_autoctl.group)" --formation "$(pg_autoctl config get pg_autoctl.formation)" --json | jq -r '.[] | select(.current_group_state == "primary") | .nodehost')"
+            ;;
+        esac
+    ;;
+esac
+pg_rman validate
+pg_rman purge
