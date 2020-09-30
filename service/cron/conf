@@ -18,7 +18,7 @@ cat >>"$BACKUP_PATH/pg_rman.ini" <<EOF
 STANDBY_HOST=localhost
 STANDBY_PORT=5432
 EOF
-cat >>"$PGDATA/postgresql.conf" <<EOF
+test -f "$PGDATA/standby.signal" || cat >>"$PGDATA/postgresql.conf" <<EOF
 
 archive_cleanup_command = 'pg_archivecleanup -d "$(echo -n "$HOME")/pg_arclog" "%r" 2>>"$(echo -n "$HOME")/pg_log/pg_archivecleanup.log"'
 archive_command = 'test ! -f "$(echo -n "$HOME")/pg_arclog/%f" && cp "%p" "$(echo -n "$HOME")/pg_arclog/%f"'
