@@ -5,14 +5,10 @@ realpath "$0"
 set -ex
 cat >>"$PGDATA/postgresql.conf" <<EOF
 
-#archive_command = '/bin/true'
-#archive_mode = on
-datestyle = 'iso, dmy'
 listen_addresses = '*'
 max_logical_replication_workers = 0
 max_sync_workers_per_subscription = 0
 max_wal_senders = 0
-track_activity_query_size = 102400
 wal_level = minimal
 EOF
 
