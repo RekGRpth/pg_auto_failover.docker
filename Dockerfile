@@ -24,6 +24,7 @@ RUN exec 2>&1 \
         ca-certificates \
         jq \
         musl-locales \
+        pgbouncer \
         postgresql \
         postgresql-contrib \
         postgresql-dev \
