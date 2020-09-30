@@ -8,9 +8,9 @@ if [ -d "$HOME/pg_rman" ] && [ "$(pg_rman show detail -a | grep OK | wc -l)" -gt
 else
     if [ -d /etc/certs ]; then
         if [ -f /etc/certs/crl.pem ]; then
-            SSL="--ssl-ca-file /etc/certs/ca.pem --ssl-crl-file /etc/certs/crl.pem --server-key /etc/certs/key.pem --server-cert /etc/certs/cert.pem"
+            SSL="--ssl-mode prefer --ssl-ca-file /etc/certs/ca.pem --ssl-crl-file /etc/certs/crl.pem --server-key /etc/certs/key.pem --server-cert /etc/certs/cert.pem"
         else
-            SSL="--ssl-ca-file /etc/certs/ca.pem --server-key /etc/certs/key.pem --server-cert /etc/certs/cert.pem"
+            SSL="--ssl-mode prefer --ssl-ca-file /etc/certs/ca.pem --server-key /etc/certs/key.pem --server-cert /etc/certs/cert.pem"
         fi
     else
         SSL="--no-ssl"
