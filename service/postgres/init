@@ -3,19 +3,18 @@
 exec 2>&1
 realpath "$0"
 set -ex
-if [ "$(pg_rman show detail -a | grep OK | wc -l)" -eq "0" ]; then
-    if [ -z "$PG_AUTO_FAILOVER_MONITOR" ]; then
-        pg_autoctl create monitor --hostname "$(hostname)" --no-ssl --skip-pg-hba
-    else
-#        if [ "$FORMATION" != "default" ]; then
-#            pg_autoctl create formation --formation "$FORMATION" --kind pgsql
-#        fi
+if [ -d "$HOME/pg_rman" ] && [ "$(pg_rman show detail -a | grep OK | wc -l)" -gt "0" ]; then
+    pg_rman restore
+else
+    if [ -z "$PG_AUTO_FAILOVER" ]; then
+        cd "$PGDATA" && initdb
+    elif [ -n "$PG_AUTO_FAILOVER_MONITOR" ]; then
         pg_autoctl create postgres --hostname "$(hostname)" --formation "${PG_AUTO_FAILOVER_FORMATION:-default}" --name "${PG_AUTO_FAILOVER_NAME:-$(hostname)}" --no-ssl --skip-pg-hba --monitor="$PG_AUTO_FAILOVER_MONITOR"
+    else
+        pg_autoctl create monitor --hostname "$(hostname)" --no-ssl --skip-pg-hba
     fi
     if [ ! -f "$PGDATA/standby.signal" ]; then
         /etc/service/postgres/conf
         /etc/service/postgres/hba
     fi
-else
-    pg_rman restore
 fi
