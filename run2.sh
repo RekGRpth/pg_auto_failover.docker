@@ -9,6 +9,7 @@ docker stop pg_auto_failover2 || echo $?
 docker rm pg_auto_failover2 || echo $?
 docker run \
     --detach \
+    --env CLUSTER_NAME=pg_auto_failover2 \
     --env GROUP_ID="$(id -g)" \
     --env LANG=ru_RU.UTF-8 \
     --env PG_AUTO_FAILOVER=true \

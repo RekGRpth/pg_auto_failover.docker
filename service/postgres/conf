@@ -5,6 +5,7 @@ realpath "$0"
 set -ex
 cat >>"$PGDATA/postgresql.conf" <<EOF
 
+cluster_name = '$CLUSTER_NAME'
 listen_addresses = '*'
 max_logical_replication_workers = 0
 max_sync_workers_per_subscription = 0
