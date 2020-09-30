@@ -10,3 +10,10 @@ if [ -n "$PG_AUTO_FAILOVER" ]; then
 else
     echo "* = " >"$HOME/databases.ini"
 fi
+#psql --quiet --tuples-only --no-align --command="select datname from pg_database where not datistemplate and datallowconn" | while read -r DATNAME; do
+#    if [ -n "$PG_AUTO_FAILOVER" ]; then
+#        echo "$DATNAME = dbname=$DATNAME host=$(pg_autoctl show state --group "$(pg_autoctl config get pg_autoctl.group)" --formation "$(pg_autoctl config get pg_autoctl.formation)" --json | jq -r '.[] | select(.current_group_state == "primary") | .nodehost') port=$(pg_autoctl show state --group "$(pg_autoctl config get pg_autoctl.group)" --formation "$(pg_autoctl config get pg_autoctl.formation)" --json | jq -r '.[] | select(.current_group_state == "primary") | .nodeport') "
+#    else
+#        echo "$DATNAME = dbname=$DATNAME"
+#    fi
+#done >"$HOME/databases.ini"
