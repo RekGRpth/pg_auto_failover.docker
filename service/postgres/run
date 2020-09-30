@@ -20,5 +20,8 @@ test -d "$PGDATA/base"
 if [ -z "$PG_AUTO_FAILOVER" ]; then
     exec chpst -u "$USER":"$GROUP" -L /run/postgresql/postgres.run postmaster
 else
+    if [ -z "$PG_AUTO_FAILOVER_MONITOR" ]; then
+        sv force-stop pgbouncer
+    fi
     exec chpst -u "$USER":"$GROUP" -L /run/postgresql/postgres.run pg_autoctl run
 fi
