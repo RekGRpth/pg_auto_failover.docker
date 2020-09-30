@@ -7,7 +7,10 @@ if [ "$(pg_rman show detail -a | grep OK | wc -l)" -eq "0" ]; then
     if [ -z "$PG_AUTO_FAILOVER_MONITOR" ]; then
         pg_autoctl create monitor --hostname "$(hostname)" --no-ssl --skip-pg-hba
     else
-        pg_autoctl create postgres --hostname "$(hostname)" --name "$(hostname)" --no-ssl --skip-pg-hba --monitor="$PG_AUTO_FAILOVER_MONITOR"
+        if [ "$FORMATION" != "default" ]; then
+            pg_autoctl create formation --formation "$FORMATION" --kind pgsql
+        fi
+        pg_autoctl create postgres --hostname "$(hostname)" --formation "$FORMATION" --name "$(hostname)" --no-ssl --skip-pg-hba --monitor="$PG_AUTO_FAILOVER_MONITOR"
     fi
     if [ ! -f "$PGDATA/standby.signal" ]; then
         /etc/service/postgres/conf

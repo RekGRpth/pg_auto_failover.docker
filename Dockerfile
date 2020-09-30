@@ -40,6 +40,7 @@ CMD /etc/service/postgres/run
 ENTRYPOINT [ "docker_entrypoint.sh" ]
 ENV HOME=/var/lib/postgresql
 ENV BACKUP_PATH=${HOME}/pg_rman \
+    FORMATION=default \
     GROUP=postgres \
     PGDATA="${HOME}/pg_data" \
     USER=postgres
