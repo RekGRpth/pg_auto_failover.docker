@@ -11,6 +11,7 @@ docker run \
     --detach \
     --env GROUP_ID="$(id -g)" \
     --env LANG=ru_RU.UTF-8 \
+    --env PG_AUTO_FAILOVER=true \
     --env PG_AUTO_FAILOVER_MONITOR=postgres://autoctl_node@pg_auto_failover0/pg_auto_failover?sslmode=prefer \
     --env TZ=Asia/Yekaterinburg \
     --env USER_ID="$(id -u)" \
