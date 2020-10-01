@@ -7,7 +7,8 @@ chmod 755 supervise
 chown "$USER":"$GROUP" supervise/ok supervise/control supervise/status
 realpath "$0"
 set -ex
-chpst -u "$USER":"$GROUP" pglisten --listen=state --conninfo="$(pg_autoctl show uri --monitor)" | jq -r "select(.formation == \""$(pg_autoctl config get pg_autoctl.formation)"\" and .groupId == $(pg_autoctl config get pg_autoctl.group) and .health == \"good\" and .reportedState == \"primary\" and .goalState == \"primary\") | {host:.host, port:.port} | join(\" \")" | while read -r HOST PORT; do
+#exec chpst -u "$USER":"$GROUP" pglisten --listen=state --conninfo="$(pg_autoctl show uri --monitor)" | jq --unbuffered --raw-output "select(.formation == \""$(pg_autoctl config get pg_autoctl.formation)"\" and .groupId == $(pg_autoctl config get pg_autoctl.group) and .health == \"good\" and .reportedState == \"primary\" and .goalState == \"primary\") | [\"* = \", \"host=\", .host, \" port=\", .port] | join(\"\")" >"$HOME/databases.ini"
+chpst -u "$USER":"$GROUP" pglisten --listen=state --conninfo="$(pg_autoctl show uri --monitor)" | jq --unbuffered --raw-output "select(.formation == \""$(pg_autoctl config get pg_autoctl.formation)"\" and .groupId == $(pg_autoctl config get pg_autoctl.group) and .health == \"good\" and .reportedState == \"primary\" and .goalState == \"primary\") | {host:.host, port:.port} | join(\" \")" | while read -r HOST PORT; do
     echo "* = host=$HOST port=$PORT" >"$HOME/databases.ini"
     sv reload pgbouncer
 done
