@@ -20,7 +20,7 @@ RUN exec 2>&1 \
     && cd /usr/src/pg_rman \
     && make -j"$(nproc)" USE_PGXS=1 install \
     && cd /usr/src/pgsidekick \
-    && make -j"$(nproc)" \
+    && make -j"$(nproc)" pglisten \
     && cp -f pglisten /usr/local/bin/ \
     && apk add --no-cache --virtual .postgresql-rundeps \
         busybox-extras \
@@ -41,8 +41,8 @@ RUN exec 2>&1 \
     && echo done
 ADD bin /usr/local/bin
 ADD service /etc/service
-CMD /etc/service/postgres/run
-ENTRYPOINT docker_entrypoint.sh
+CMD [ "/etc/service/postgres/run" ]
+ENTRYPOINT [ "docker_entrypoint.sh" ]
 ENV HOME=/var/lib/postgresql
 ENV BACKUP_PATH=${HOME}/pg_rman \
     GROUP=postgres \
