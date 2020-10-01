@@ -15,10 +15,10 @@ else
     else
         SSL="--no-ssl"
     fi
-    if [ -z "$PG_AUTO_FAILOVER" ]; then
+    if [ -z "$PG_AUTOCTL" ]; then
         cd "$PGDATA" && initdb
-    elif [ -n "$PG_AUTO_FAILOVER_MONITOR" ]; then
-        pg_autoctl create postgres --hostname "$(hostname)" --formation "${PG_AUTO_FAILOVER_FORMATION:-default}" --name "${PG_AUTO_FAILOVER_NAME:-$(hostname)}" $SSL --skip-pg-hba --monitor="$PG_AUTO_FAILOVER_MONITOR"
+    elif [ -n "$PG_AUTOCTL_MONITOR" ]; then
+        pg_autoctl create postgres --hostname "$(hostname)" --replication-quorum "${PG_AUTOCTL_REPLICATION_QUORUM:-true}" --formation "${PG_AUTOCTL_FORMATION:-default}" --name "${PG_AUTOCTL_NAME:-$(hostname)}" $SSL --skip-pg-hba --monitor="$PG_AUTOCTL_MONITOR"
     else
         pg_autoctl create monitor --hostname "$(hostname)" $SSL --skip-pg-hba
     fi

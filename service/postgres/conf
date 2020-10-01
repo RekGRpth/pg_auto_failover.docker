@@ -13,7 +13,7 @@ max_wal_senders = 0
 wal_level = minimal
 EOF
 
-if [ -z "$PG_AUTO_FAILOVER" ] && [ -d /etc/certs ]; then
+if [ -z "$PG_AUTOCTL" ] && [ -d /etc/certs ]; then
     cat >>"$PGDATA/postgresql.conf" <<EOF
 
 ssl_ca_file = '/etc/certs/ca.pem'

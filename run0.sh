@@ -12,7 +12,7 @@ docker run \
     --env CLUSTER_NAME=monitor \
     --env GROUP_ID="$(id -g)" \
     --env LANG=ru_RU.UTF-8 \
-    --env PG_AUTO_FAILOVER=true \
+    --env PG_AUTOCTL=true \
     --env TZ=Asia/Yekaterinburg \
     --env USER_ID="$(id -u)" \
     --hostname pg_auto_failover0 \
