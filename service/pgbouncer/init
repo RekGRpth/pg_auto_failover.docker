@@ -3,8 +3,8 @@
 exec 2>&1
 realpath "$0"
 set -ex
-touch "$HOME/databases.ini"
-cat >"$HOME/pgbouncer.ini" <<EOF
+touch "$HOME/.databases.ini"
+cat >"$HOME/.pgbouncer.ini" <<EOF
 [pgbouncer]
 admin_users = postgres
 application_name_add_host = 1
@@ -21,7 +21,7 @@ unix_socket_mode = 0777
 EOF
 
 if [ -d /etc/certs ]; then
-    cat >>"$HOME/pgbouncer.ini" <<EOF
+    cat >>"$HOME/.pgbouncer.ini" <<EOF
 
 client_tls_ca_file = /etc/certs/ca.pem
 client_tls_cert_file = /etc/certs/cert.pem
@@ -34,7 +34,7 @@ client_tls_sslmode = prefer
 EOF
 fi
 
-cat >>"$HOME/pgbouncer.ini" <<EOF
+cat >>"$HOME/.pgbouncer.ini" <<EOF
 [databases]
-%include $(echo -n "$HOME")/databases.ini
+%include $(echo -n "$HOME")/.databases.ini
 EOF
