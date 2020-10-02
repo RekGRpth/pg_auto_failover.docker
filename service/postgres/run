@@ -4,7 +4,7 @@ exec 2>&1
 if [ -z "$PG_AUTOCTL" ]; then
     install -d -m 0750 -o "$USER" -g "$GROUP" "$PGDATA"
 else
-    install -d -m 1775 -o "$USER" -g "$GROUP" "/tmp/pg_autoctl$PGDATA"
+    install -d -m 1775 -o "$USER" -g "$GROUP" "/tmp/pg_autoctl"
 fi
 install -d -m 1775 -o "$USER" -g "$GROUP" /run/postgresql /var/log/postgresql
 if [ "$(pgrep runsvdir | wc -l)" -gt "0" ]; then
