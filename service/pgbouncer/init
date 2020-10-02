@@ -26,7 +26,7 @@ if [ -n "$SSL_MODE" ]; then echo "client_tls_sslmode = '$SSL_MODE'" >>"$HOME/.pg
 if [ -n "$PG_AUTOCTL_SERVER_CERT" ]; then echo "client_tls_cert_file = '$PG_AUTOCTL_SERVER_CERT'" >>"$HOME/.pgbouncer.ini"; fi
 if [ -n "$PG_AUTOCTL_SERVER_KEY" ]; then echo "client_tls_key_file = '$PG_AUTOCTL_SERVER_KEY'" >>"$HOME/.pgbouncer.ini"; fi
 if [ -n "$PG_AUTOCTL_SSL_CA_FILE" ]; then echo "client_tls_ca_file = '$PG_AUTOCTL_SSL_CA_FILE'" >>"$HOME/.pgbouncer.ini"; fi
-if [ -n "$PG_AUTOCTL_SSL_SSL_MODE" ]; then echo "client_tls_sslmode = '$PG_AUTOCTL_SSL_MODE'" >>"$HOME/.pgbouncer.ini"; fi
+if [ -n "$PG_AUTOCTL_SSL_MODE" ]; then echo "client_tls_sslmode = '$PG_AUTOCTL_SSL_MODE'" >>"$HOME/.pgbouncer.ini"; fi
 cat >>"$HOME/.pgbouncer.ini" <<EOF
 
 [databases]
