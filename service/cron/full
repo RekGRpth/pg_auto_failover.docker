@@ -5,13 +5,13 @@ realpath "$0"
 set -ex
 if [ -n "$PG_AUTOCTL" ] && [ "$(pg_autoctl config get pg_autoctl.role)" != "monitor" ]; then
     FORMATION="$(pg_autoctl config get pg_autoctl.formation)"
-    GROUP="$(pg_autoctl config get pg_autoctl.group)"    
-    case "$(pg_autoctl show state --group "$GROUP" --formation "$FORMATION" --json --local | jq --unbuffered --raw-output .current_group_state)" in
+    GROUPID="$(pg_autoctl config get pg_autoctl.group)"    
+    case "$(pg_autoctl show state --group "$GROUPID" --formation "$FORMATION" --json --local | jq --unbuffered --raw-output .current_group_state)" in
         "single" | "primary")
             pg_rman backup --backup-mode=full
         ;;
 #        "secondary")
-#            HOST="$(pg_autoctl show state --group "$GROUP" --formation "$FORMATION" --json | jq --unbuffered --raw-output ".[] | select(.current_group_state == \"primary\") | .nodehost")"
+#            HOST="$(pg_autoctl show state --group "$GROUPID" --formation "$FORMATION" --json | jq --unbuffered --raw-output ".[] | select(.current_group_state == \"primary\") | .nodehost")"
 #            pg_rman backup --backup-mode=full --host="$HOST"
 #        ;;
     esac
