@@ -26,7 +26,7 @@ else
             --name="${PG_AUTOCTL_NAME:-$(hostname)}" \
             --replication-quorum="${PG_AUTOCTL_REPLICATION_QUORUM:-true}" \
             --skip-pg-hba \
-            --ssl-mode="${PG_AUTOCTL_SSL_MODE:-allow}" \
+            --ssl-mode="${PG_AUTOCTL_SSL_MODE:-allow}"
     else
         pg_autoctl create monitor \
             "$NO_SSL" \
@@ -35,8 +35,8 @@ else
             "$SSL_CA_FILE" \
             "$SSL_CRL_FILE" \
             --hostname="$(hostname)" \
-            --skip-pg-hba
-            --ssl-mode="${PG_AUTOCTL_SSL_MODE:-allow}" \
+            --skip-pg-hba \
+            --ssl-mode="${PG_AUTOCTL_SSL_MODE:-allow}"
     fi
     if [ ! -f "$PGDATA/standby.signal" ]; then
         /etc/service/postgres/conf
