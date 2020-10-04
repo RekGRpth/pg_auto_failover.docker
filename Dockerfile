@@ -22,6 +22,7 @@ RUN exec 2>&1 \
     && cd /usr/src/pgsidekick \
     && make -j"$(nproc)" pglisten \
     && cp -f pglisten /usr/local/bin/ \
+    && cp -f /usr/bin/pg_config /usr/local/bin/ \
     && apk add --no-cache --virtual .postgresql-rundeps \
         busybox-extras \
         busybox-suid \
@@ -31,12 +32,12 @@ RUN exec 2>&1 \
         pgbouncer \
         postgresql \
         postgresql-contrib \
-        postgresql-dev \
         runit \
         shadow \
         tzdata \
         $(scanelf --needed --nobanner --format '%n#p' --recursive /usr/lib/postgresql/pgautofailover.so | tr ',' '\n' | sort -u | awk 'system("[ -e /usr/local/lib/" $1 " ]") == 0 { next } { print "so:" $1 }') \
     && apk del --no-cache .build-deps \
+    && mv -f /usr/local/bin/pg_config /usr/bin/ \
     && rm -rf /usr/src /usr/share/doc /usr/share/man /usr/local/share/doc /usr/local/share/man \
     && echo done
 ADD bin /usr/local/bin
