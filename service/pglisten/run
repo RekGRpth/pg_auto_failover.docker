@@ -17,7 +17,7 @@ if [ -n "$PG_AUTOCTL_MONITOR" ]; then
         chpst -u "$USER":"$GROUP" sv reload pgbouncer
     done
 else
-    chpst -u "$USER":"$GROUP" pglisten --listen=state --conninfo="$CONNINFO" | jq --unbuffered --raw-output "select(.health == \"good\" and ((.reportedState == \"primary\" and .goalState == \"primary\") or (.reportedState == \"wait_primary\" and .goalState == \"wait_primary\") or (.reportedState == \"single\" and .goalState == \"single\"))) | {host:.host, port:.port} | join(\" \")" | while read -r HOST PORT; do
+    chpst -u "$USER":"$GROUP" pglisten --listen=state --conninfo="$CONNINFO" | jq --unbuffered --raw-output "select((.reportedState == \"primary\" and .goalState == \"primary\") or (.reportedState == \"wait_primary\" and .goalState == \"wait_primary\") or (.reportedState == \"single\" and .goalState == \"single\")) | {host:.host, port:.port} | join(\" \")" | while read -r HOST PORT; do
         chpst -u "$USER":"$GROUP" /etc/service/cron/incremental
     done
 fi
