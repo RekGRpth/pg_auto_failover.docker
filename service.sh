@@ -1,5 +1,7 @@
 #!/bin/sh -ex
 
+#docker build --tag rekgrpth/pg_auto_failover .
+#docker push rekgrpth/pg_auto_failover
 #docker pull rekgrpth/pg_auto_failover || exit $?
 docker network create --attachable --driver overlay docker1 || echo $?
 docker volume create monitor || echo $?
