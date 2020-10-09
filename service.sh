@@ -1,33 +1,47 @@
-#!/bin/sh -x
+#!/bin/sh -ex
 
-docker pull rekgrpth/pg_auto_failover || exit $?
+#docker pull rekgrpth/pg_auto_failover || exit $?
+docker network create --attachable --driver overlay docker1 || echo $?
 docker volume create monitor || echo $?
-docker volume create postgres || echo $?
-docker network create --attachable --driver overlay docker || echo $?
-docker service rm postgres1 || echo $?
-docker service rm postgres2 || echo $?
 docker service rm monitor || echo $?
 docker service create \
-    --constraint node.role==manager \
+    --env CLUSTER_NAME=monitor \
+    --env GROUP_ID="$(id -g)" \
+    --env LANG=ru_RU.UTF-8 \
+    --env PG_AUTOCTL_SERVER_CERT=/etc/certs/cert.pem \
+    --env PG_AUTOCTL_SERVER_KEY=/etc/certs/key.pem \
+    --env PG_AUTOCTL_SSL_CA_FILE=/etc/certs/ca.pem \
+    --env PG_AUTOCTL_SSL_MODE=prefer \
+    --env PG_AUTOCTL=true \
+    --env TZ=Asia/Yekaterinburg \
+    --env USER_ID="$(id -u)" \
     --hostname tasks.monitor \
+    --mount type=bind,source=/etc/certs,destination=/etc/certs,readonly \
     --mount type=volume,source=monitor,destination=/var/lib/postgresql \
     --name monitor \
-    --network name=docker \
-    --replicas-max-per-node 1 \
-    rekgrpth/pg_auto_failover sh -cx "pg_autoctl -vvv create monitor --nodename tasks.monitor --no-ssl --auth trust; pg_autoctl -vvv run"
+    --network name=docker1 \
+    rekgrpth/pg_auto_failover runsvdir /etc/service
+docker volume create keeper || echo $?
+docker service rm keeper || echo $?
 docker service create \
-    --constraint node.hostname==docker1 \
-    --hostname tasks.postgres1 \
-    --mount type=volume,source=postgres,destination=/var/lib/postgresql \
-    --name postgres1 \
-    --network name=docker \
-    --replicas-max-per-node 1 \
-    rekgrpth/pg_auto_failover sh -cx "pg_autoctl -vvv create postgres --nodename tasks.postgres1 --no-ssl --auth trust --allow-removing-pgdata --monitor=postgres://autoctl_node@tasks.monitor:5432/pg_auto_failover; pg_autoctl -vvv run"
-docker service create \
-    --constraint node.hostname==docker2 \
-    --hostname tasks.postgres2 \
-    --mount type=volume,source=postgres,destination=/var/lib/postgresql \
-    --name postgres2 \
-    --network name=docker \
-    --replicas-max-per-node 1 \
-    rekgrpth/pg_auto_failover sh -cx "pg_autoctl -vvv create postgres --nodename tasks.postgres2 --no-ssl --auth trust --allow-removing-pgdata --monitor=postgres://autoctl_node@tasks.monitor:5432/pg_auto_failover; pg_autoctl -vvv run"
+    --env CLUSTER_NAME=test \
+    --env GROUP_ID="$(id -g)" \
+    --env LANG=ru_RU.UTF-8 \
+    --env PG_AUTOCTL_MONITOR=postgres://autoctl_node@tasks.monitor/pg_auto_failover?sslmode=prefer \
+    --env PG_AUTOCTL_NAME="{{.Service.Name}}.{{.Task.Slot}}" \
+    --env PG_AUTOCTL_REPLICATION_QUORUM=false \
+    --env PG_AUTOCTL_SERVER_CERT=/etc/certs/cert.pem \
+    --env PG_AUTOCTL_SERVER_KEY=/etc/certs/key.pem \
+    --env PG_AUTOCTL_SSL_CA_FILE=/etc/certs/ca.pem \
+    --env PG_AUTOCTL_SSL_MODE=prefer \
+    --env PG_AUTOCTL=true \
+    --env PGDATA="/var/lib/postgresql/pg_data.{{.Task.Slot}}" \
+    --env TZ=Asia/Yekaterinburg \
+    --env USER_ID="$(id -u)" \
+    --hostname="{{.Service.Name}}.{{.Task.Slot}}.{{.Task.ID}}" \
+    --mount type=bind,source=/etc/certs,destination=/etc/certs,readonly \
+    --mount type=volume,source=keeper,destination=/var/lib/postgresql \
+    --name keeper \
+    --network name=docker1 \
+    --replicas 4 \
+    rekgrpth/pg_auto_failover runsvdir /etc/service
