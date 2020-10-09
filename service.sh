@@ -24,26 +24,27 @@ docker service create \
     --network name=docker1 \
     rekgrpth/pg_auto_failover runsvdir /etc/service
 docker volume create keeper || echo $?
-docker service rm keeper || echo $?
+for I in 1 2 3 4; do
+docker service rm "keeper$I" || echo $?
 docker service create \
     --env CLUSTER_NAME=test \
     --env GROUP_ID="$(id -g)" \
     --env LANG=ru_RU.UTF-8 \
     --env PG_AUTOCTL_MONITOR=postgres://autoctl_node@tasks.monitor/pg_auto_failover?sslmode=prefer \
-    --env PG_AUTOCTL_NAME="{{.Service.Name}}.{{.Task.Slot}}" \
+    --env PG_AUTOCTL_NAME="keeper$I" \
     --env PG_AUTOCTL_REPLICATION_QUORUM=false \
     --env PG_AUTOCTL_SERVER_CERT=/etc/certs/cert.pem \
     --env PG_AUTOCTL_SERVER_KEY=/etc/certs/key.pem \
     --env PG_AUTOCTL_SSL_CA_FILE=/etc/certs/ca.pem \
     --env PG_AUTOCTL_SSL_MODE=prefer \
     --env PG_AUTOCTL=true \
-    --env PGDATA="/var/lib/postgresql/pg_data.{{.Task.Slot}}" \
+    --env PGDATA="/var/lib/postgresql/pg_data.$I" \
     --env TZ=Asia/Yekaterinburg \
     --env USER_ID="$(id -u)" \
-    --hostname="{{.Service.Name}}.{{.Task.Slot}}.{{.Task.ID}}" \
+    --hostname="tasks.keeper$I" \
     --mount type=bind,source=/etc/certs,destination=/etc/certs,readonly \
     --mount type=volume,source=keeper,destination=/var/lib/postgresql \
-    --name keeper \
+    --name "keeper$I" \
     --network name=docker1 \
-    --replicas 4 \
     rekgrpth/pg_auto_failover runsvdir /etc/service
+done
