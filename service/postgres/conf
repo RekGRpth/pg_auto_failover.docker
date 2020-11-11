@@ -12,6 +12,7 @@ max_sync_workers_per_subscription = 0
 max_wal_senders = 0
 wal_level = minimal
 EOF
+if [ -n "$SERVER_CERT" ] && [ -n "$SERVER_KEY" ]; then echo "ssl = on" >>"$PGDATA/postgresql.conf"; fi
 if [ -n "$SERVER_CERT" ]; then echo "ssl_cert_file = '$SERVER_CERT'" >>"$PGDATA/postgresql.conf"; fi
 if [ -n "$SERVER_KEY" ]; then echo "ssl_key_file = '$SERVER_KEY'" >>"$PGDATA/postgresql.conf"; fi
 if [ -n "$SSL_CA_FILE" ]; then echo "ssl_ca_file = '$SSL_CA_FILE'" >>"$PGDATA/postgresql.conf"; fi
