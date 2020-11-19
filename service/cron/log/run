@@ -1,4 +1,4 @@
 #!/bin/sh
 
 exec 2>&1
-exec sed 's|^|cron: |'
+exec sed -u "s|^|$(date "+%F %T") cron: |"
