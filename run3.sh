@@ -12,6 +12,7 @@ docker run \
     --env CLUSTER_NAME=test \
     --env GROUP_ID="$(id -g)" \
     --env LANG=ru_RU.UTF-8 \
+    --env PG_AUTOCTL_AUTH=trust \
     --env PG_AUTOCTL_MONITOR=postgres://autoctl_node@pg_auto_failover0/pg_auto_failover?sslmode=prefer \
     --env PG_AUTOCTL_NAME=pg_auto_failover3 \
     --env PG_AUTOCTL_REPLICATION_QUORUM=false \
