@@ -32,6 +32,7 @@ RUN exec 2>&1 \
         pgbouncer \
         postgresql \
         postgresql-contrib \
+        procps \
         runit \
         sed \
         shadow \
