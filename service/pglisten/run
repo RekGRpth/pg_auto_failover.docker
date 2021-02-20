@@ -10,6 +10,7 @@ chown "$USER":"$GROUP" supervise/ok supervise/control supervise/status
 realpath "$0"
 set -ex
 CONNINFO="$(pg_autoctl show uri --json | jq --unbuffered --raw-output ".[] | select(.name == \"monitor\" and .type == \"monitor\") | .uri")"
+test -n "$CONNINFO"
 if [ -n "$PG_AUTOCTL_MONITOR" ]; then
     FORMATION="$(pg_autoctl config get pg_autoctl.formation)"
     GROUPID="$(pg_autoctl config get pg_autoctl.group)"
