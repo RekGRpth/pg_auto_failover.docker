@@ -18,6 +18,7 @@ RUN exec 2>&1 \
     && cd /usr/src/pg_auto_failover \
     && make -j"$(nproc)" USE_PGXS=1 install \
     && cd /usr/src/pg_rman \
+    && git checkout REL_13_STABLE \
     && make -j"$(nproc)" USE_PGXS=1 install \
     && cd /usr/src/pgsidekick \
     && make -j"$(nproc)" pglisten \
