@@ -9,6 +9,7 @@ RUN exec 2>&1 \
         make \
         musl-dev \
         postgresql-dev \
+        readline-dev \
         zlib-dev \
     && mkdir -p /usr/src \
     && cd /usr/src \
