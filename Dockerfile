@@ -1,7 +1,6 @@
 FROM alpine
-RUN exec 2>&1 \
-    && set -eux \
-    && apk add --no-cache --virtual .build-deps \
+RUN set -eux; \
+    apk add --no-cache --virtual .build-deps \
         gcc \
         git \
         libedit-dev \
@@ -11,21 +10,22 @@ RUN exec 2>&1 \
         postgresql-dev \
         readline-dev \
         zlib-dev \
-    && mkdir -p /usr/src \
-    && cd /usr/src \
-    && git clone --recursive https://github.com/RekGRpth/pg_auto_failover.git \
-    && git clone --recursive https://github.com/RekGRpth/pg_rman.git \
-    && git clone --recursive https://github.com/RekGRpth/pgsidekick.git \
-    && cd /usr/src/pg_auto_failover \
-    && make -j"$(nproc)" USE_PGXS=1 install \
-    && cd /usr/src/pg_rman \
-    && git checkout REL_13_STABLE \
-    && make -j"$(nproc)" USE_PGXS=1 install \
-    && cd /usr/src/pgsidekick \
-    && make -j"$(nproc)" pglisten \
-    && cp -f pglisten /usr/local/bin/ \
-    && cp -f /usr/bin/pg_config /usr/local/bin/ \
-    && apk add --no-cache --virtual .postgresql-rundeps \
+    ; \
+    mkdir -p /usr/src; \
+    cd /usr/src; \
+    git clone --recursive https://github.com/RekGRpth/pg_auto_failover.git; \
+    git clone --recursive https://github.com/RekGRpth/pg_rman.git; \
+    git clone --recursive https://github.com/RekGRpth/pgsidekick.git; \
+    cd /usr/src/pg_auto_failover; \
+    make -j"$(nproc)" USE_PGXS=1 install; \
+    cd /usr/src/pg_rman; \
+    git checkout REL_13_STABLE; \
+    make -j"$(nproc)" USE_PGXS=1 install; \
+    cd /usr/src/pgsidekick; \
+    make -j"$(nproc)" pglisten; \
+    cp -f pglisten /usr/local/bin/; \
+    cp -f /usr/bin/pg_config /usr/local/bin/; \
+    apk add --no-cache --virtual .postgresql-rundeps \
         busybox-extras \
         busybox-suid \
         ca-certificates \
@@ -40,10 +40,11 @@ RUN exec 2>&1 \
         shadow \
         tzdata \
         $(scanelf --needed --nobanner --format '%n#p' --recursive /usr/local | tr ',' '\n' | sort -u | while read -r lib; do test ! -e "/usr/local/lib/$lib" && echo "so:$lib"; done) \
-    && apk del --no-cache .build-deps \
-    && mv -f /usr/local/bin/pg_config /usr/bin/ \
-    && rm -rf /usr/src /usr/share/doc /usr/share/man /usr/local/share/doc /usr/local/share/man \
-    && echo done
+    ; \
+    apk del --no-cache .build-deps; \
+    mv -f /usr/local/bin/pg_config /usr/bin/; \
+    rm -rf /usr/src /usr/share/doc /usr/share/man /usr/local/share/doc /usr/local/share/man; \
+    echo done
 ADD bin /usr/local/bin
 ADD service /etc/service
 CMD [ "/etc/service/postgres/run" ]
@@ -55,8 +56,7 @@ ENV BACKUP_PATH=${HOME}/pg_rman \
     USER=postgres
 VOLUME "${HOME}"
 WORKDIR "${HOME}"
-RUN exec 2>&1 \
-    && set -ex \
-    && chmod -R 0755 /etc/service /usr/local/bin \
-    && rm -f /var/spool/cron/crontabs/root \
-    && echo done
+RUN set -ex; \
+    chmod -R 0755 /etc/service /usr/local/bin; \
+    rm -f /var/spool/cron/crontabs/root; \
+    echo done
