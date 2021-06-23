@@ -1,6 +1,6 @@
 FROM alpine
 RUN exec 2>&1 \
-    && set -ex \
+    && set -eux \
     && apk add --no-cache --virtual .build-deps \
         gcc \
         git \
@@ -39,7 +39,7 @@ RUN exec 2>&1 \
         sed \
         shadow \
         tzdata \
-        $(scanelf --needed --nobanner --format '%n#p' --recursive /usr/lib/postgresql/pgautofailover.so | tr ',' '\n' | sort -u | awk 'system("[ -e /usr/local/lib/" $1 " ]") == 0 { next } { print "so:" $1 }') \
+        $(scanelf --needed --nobanner --format '%n#p' --recursive /usr/local | tr ',' '\n' | sort -u | while read -r lib; do test ! -e "/usr/local/lib/$lib" && echo "so:$lib"; done) \
     && apk del --no-cache .build-deps \
     && mv -f /usr/local/bin/pg_config /usr/bin/ \
     && rm -rf /usr/src /usr/share/doc /usr/share/man /usr/local/share/doc /usr/local/share/man \
