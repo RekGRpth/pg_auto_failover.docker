@@ -56,7 +56,7 @@ ENV BACKUP_PATH=${HOME}/pg_rman \
     USER=postgres
 VOLUME "${HOME}"
 WORKDIR "${HOME}"
-RUN set -ex; \
+RUN set -eux; \
     chmod -R 0755 /etc/service /usr/local/bin; \
     rm -f /var/spool/cron/crontabs/root; \
     echo done
