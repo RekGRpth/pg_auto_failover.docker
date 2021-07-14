@@ -48,9 +48,9 @@ RUN set -eux; \
     find / -name "*.a" -delete; \
     find / -name "*.la" -delete; \
     echo done
-ADD bin /usr/local/bin
-ADD service /etc/service
 CMD [ "/etc/service/postgres/run" ]
+COPY bin /usr/local/bin
+COPY service /etc/service
 ENTRYPOINT [ "docker_entrypoint.sh" ]
 ENV HOME=/var/lib/postgresql
 ENV BACKUP_PATH=${HOME}/pg_rman \
