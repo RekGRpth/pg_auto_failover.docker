@@ -41,9 +41,12 @@ RUN set -eux; \
         tzdata \
         $(scanelf --needed --nobanner --format '%n#p' --recursive /usr/local | tr ',' '\n' | sort -u | while read -r lib; do test ! -e "/usr/local/lib/$lib" && echo "so:$lib"; done) \
     ; \
+    (strip /usr/local/bin/* /usr/local/lib/*.so || true); \
     apk del --no-cache .build-deps; \
     mv -f /usr/local/bin/pg_config /usr/bin/; \
     rm -rf /usr/src /usr/share/doc /usr/share/man /usr/local/share/doc /usr/local/share/man; \
+    find / -name "*.a" -delete; \
+    find / -name "*.la" -delete; \
     echo done
 ADD bin /usr/local/bin
 ADD service /etc/service
