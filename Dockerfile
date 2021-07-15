@@ -11,21 +11,21 @@ RUN set -eux; \
         readline-dev \
         zlib-dev \
     ; \
-    mkdir -p /usr/src; \
-    cd /usr/src; \
+    mkdir -p "${HOME}"; \
+    cd "${HOME}"; \
     git clone --recursive https://github.com/RekGRpth/pg_auto_failover.git; \
     git clone --recursive https://github.com/RekGRpth/pg_rman.git; \
     git clone --recursive https://github.com/RekGRpth/pgsidekick.git; \
-    id; \
-    cd /usr/src/pg_auto_failover; \
+    cd "${HOME}/pg_auto_failover"; \
     make -j"$(nproc)" USE_PGXS=1 install; \
-    cd /usr/src/pg_rman; \
+    cd "${HOME}/pg_rman"; \
     git checkout REL_13_STABLE; \
     make -j"$(nproc)" USE_PGXS=1 install; \
-    cd /usr/src/pgsidekick; \
+    cd "${HOME}/pgsidekick"; \
     make -j"$(nproc)" pglisten; \
     cp -f pglisten /usr/local/bin/; \
     cp -f /usr/bin/pg_config /usr/local/bin/; \
+    cd "${HOME}"; \
     apk add --no-cache --virtual .postgresql-rundeps \
         busybox-extras \
         busybox-suid \
@@ -45,9 +45,9 @@ RUN set -eux; \
     find /usr/local/bin /usr/local/lib -type f -exec strip '{}' \;; \
     apk del --no-cache .build-deps; \
     mv -f /usr/local/bin/pg_config /usr/bin/; \
-    rm -rf /usr/src /usr/share/doc /usr/share/man /usr/local/share/doc /usr/local/share/man; \
-    find / -name "*.a" -delete; \
-    find / -name "*.la" -delete; \
+    find / -type f -name "*.a" -delete; \
+    find / -type f -name "*.la" -delete; \
+    rm -rf "${HOME}" /usr/share/doc /usr/share/man /usr/local/share/doc /usr/local/share/man; \
     echo done
 CMD [ "/etc/service/postgres/run" ]
 COPY bin /usr/local/bin
