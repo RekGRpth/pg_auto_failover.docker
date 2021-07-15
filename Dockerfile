@@ -1,4 +1,5 @@
 FROM alpine
+ENV HOME=/var/lib/postgresql
 RUN set -eux; \
     apk add --no-cache --virtual .build-deps \
         gcc \
@@ -53,8 +54,7 @@ CMD [ "/etc/service/postgres/run" ]
 COPY bin /usr/local/bin
 COPY service /etc/service
 ENTRYPOINT [ "docker_entrypoint.sh" ]
-ENV HOME=/var/lib/postgresql
-ENV BACKUP_PATH=${HOME}/pg_rman \
+ENV BACKUP_PATH="${HOME}/pg_rman" \
     GROUP=postgres \
     PGDATA="${HOME}/pg_data" \
     USER=postgres
