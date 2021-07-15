@@ -16,6 +16,7 @@ RUN set -eux; \
     git clone --recursive https://github.com/RekGRpth/pg_auto_failover.git; \
     git clone --recursive https://github.com/RekGRpth/pg_rman.git; \
     git clone --recursive https://github.com/RekGRpth/pgsidekick.git; \
+    id; \
     cd /usr/src/pg_auto_failover; \
     make -j"$(nproc)" USE_PGXS=1 install; \
     cd /usr/src/pg_rman; \
