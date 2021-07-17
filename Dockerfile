@@ -50,9 +50,9 @@ RUN set -eux; \
     find / -type f -name "*.la" -delete; \
     rm -rf "${HOME}" /usr/share/doc /usr/share/man /usr/local/share/doc /usr/local/share/man; \
     echo done
+ADD bin /usr/local/bin
+ADD service /etc/service
 CMD [ "/etc/service/postgres/run" ]
-COPY bin /usr/local/bin
-COPY service /etc/service
 ENTRYPOINT [ "docker_entrypoint.sh" ]
 ENV BACKUP_PATH="${HOME}/pg_rman" \
     GROUP=postgres \
