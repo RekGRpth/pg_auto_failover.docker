@@ -12,17 +12,17 @@ RUN set -eux; \
         readline-dev \
         zlib-dev \
     ; \
-    mkdir -p "${HOME}"; \
-    cd "${HOME}"; \
+    mkdir -p "${HOME}/src"; \
+    cd "${HOME}/src"; \
     git clone --recursive https://github.com/RekGRpth/pg_auto_failover.git; \
     git clone --recursive https://github.com/RekGRpth/pg_rman.git; \
     git clone --recursive https://github.com/RekGRpth/pgsidekick.git; \
-    cd "${HOME}/pg_auto_failover"; \
+    cd "${HOME}/src/pg_auto_failover"; \
     make -j"$(nproc)" USE_PGXS=1 install; \
-    cd "${HOME}/pg_rman"; \
+    cd "${HOME}/src/pg_rman"; \
     git checkout REL_13_STABLE; \
     make -j"$(nproc)" USE_PGXS=1 install; \
-    cd "${HOME}/pgsidekick"; \
+    cd "${HOME}/src/pgsidekick"; \
     make -j"$(nproc)" pglisten; \
     cp -f pglisten /usr/local/bin/; \
     cp -f /usr/bin/pg_config /usr/local/bin/; \
