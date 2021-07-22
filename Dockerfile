@@ -14,13 +14,12 @@ RUN set -eux; \
     ; \
     mkdir -p "${HOME}/src"; \
     cd "${HOME}/src"; \
-    git clone --recursive https://github.com/RekGRpth/pg_auto_failover.git; \
-    git clone --recursive https://github.com/RekGRpth/pg_rman.git; \
-    git clone --recursive https://github.com/RekGRpth/pgsidekick.git; \
+    git clone -b master https://github.com/RekGRpth/pg_auto_failover.git; \
+    git clone -b master https://github.com/RekGRpth/pgsidekick.git; \
+    git clone -b REL_13_STABLE https://github.com/RekGRpth/pg_rman.git; \
     cd "${HOME}/src/pg_auto_failover"; \
     make -j"$(nproc)" USE_PGXS=1 install; \
     cd "${HOME}/src/pg_rman"; \
-    git checkout REL_13_STABLE; \
     make -j"$(nproc)" USE_PGXS=1 install; \
     cd "${HOME}/src/pgsidekick"; \
     make -j"$(nproc)" pglisten; \
