@@ -1,8 +1,6 @@
-#!/bin/sh -ex
+#!/bin/sh -eux
 
-#docker build --tag rekgrpth/pg_auto_failover .
-#docker push rekgrpth/pg_auto_failover
-#docker pull rekgrpth/pg_auto_failover
+docker pull ghcr.io/rekgrpth/pg_auto_failover.docker
 docker network create --attachable --opt com.docker.network.bridge.name=docker docker || echo $?
 docker volume create pg_auto_failover
 docker stop pg_auto_failover || echo $?
@@ -23,4 +21,4 @@ docker run \
     --name pg_auto_failover \
     --network name=docker \
     --restart always \
-    rekgrpth/pg_auto_failover runsvdir /etc/service
+    ghcr.io/rekgrpth/pg_auto_failover.docker runsvdir /etc/service
